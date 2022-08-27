@@ -6,6 +6,8 @@ public class GraphMatrix implements Graph {
 
     private int numVertices;
     private int[][] adjacency;
+    private int[] recorridos; // Para nodos ya recorridos
+    private int compConexos; // Contador de componentes conexos
 
     public GraphMatrix(int numVertices) {
         this.numVertices = numVertices;
@@ -16,6 +18,13 @@ public class GraphMatrix implements Graph {
                 this.adjacency[i][j] = 0;
             }
         }
+        
+        // Al inicio ningún vértice es recorrido
+		recorridos = new int[numVertices];
+        
+        // Llenar a todos los vértices con -1
+		for (int i = 0; i < numVertices; i++)
+            recorridos[i] = -1;
     }
 
     @Override
@@ -52,6 +61,7 @@ public class GraphMatrix implements Graph {
 
     public ArrayList<Integer> depthFirstSearch(int n, ArrayList<Integer> visited) {
         visited.add(n);
+        recorridos[n] = 1; // Es recorrido
         for (int i = 0; i < this.numVertices; i++) {
             if (this.adjacency[n][i] == 1 && !visited.contains(i)) {
                 depthFirstSearch(i, visited);
@@ -78,8 +88,13 @@ public class GraphMatrix implements Graph {
     }
 
     public int countConnectedComponents() {
-
-        return -1;
+        for (int i = 0; i < numVertices; i++) {
+			if (recorridos[i] == -1) {
+				depthFirstSearch(i);	// volver a hacer DFS
+				compConexos++;			// añadir componentes conexos
+			}
+		}
+		return compConexos;
     }
 
     public static void main(String args[]) {
